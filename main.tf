@@ -2,8 +2,8 @@ provider "aws" {
   region = "eu-west-3"
 }
 
-resource "aws_security_group" "wordpress-sg" {
-  name = "wordpress-sg"
+resource "aws_security_group" "wordpress_sg" {
+  name = "wordpress_sg"
 
   ingress {
     from_port   = 80
@@ -60,7 +60,7 @@ resource "aws_instance" "wordpress" {
   key_name      = "parisIAM"
   tag           = "wordpress"
 
-  security_groups = [aws_security_group.wordpress-sg.name]
+  security_groups = [aws_security_group.wordpress_sg.name]
 
   user_data = <<-EOF
               #!/bin/bash
@@ -83,7 +83,7 @@ resource "aws_instance" "wp_proxy" {
   instance_type = "t2.medium"
   key_name      = "parisIAM"
   tag           = "wp_proxy"
-  security_groups = [aws_security_group.wordpress-sg.name]
+  security_groups = [aws_security_group.wordpress_sg.name]
 
 user_data = <<-EOF
               #!/bin/bash
