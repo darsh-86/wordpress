@@ -47,7 +47,7 @@ resource "aws_db_instance" "wordpress_db" {
   engine               = "mysql"
   engine_version       = "8.0"
   instance_class       = "db.t2.micro"
-  name                 = "wordpressdb"
+  db_name                 = "wordpressdb"
   username             = "admin"
   password             = "admin4321"
   parameter_group_name = "default.mysql8.0"
@@ -74,7 +74,7 @@ resource "aws_instance" "wordpress" {
                 -e WORDPRESS_DB_USER=admin \\
                 -e WORDPRESS_DB_PASSWORD=admin4321 \\
                 -e WORDPRESS_DB_NAME=wordpress \\
-                -p 8080:8080 wordpress
+                -p 8080:80 wordpress
                  EOF 
 }
 resource "aws_instance" "wp_proxy" {
