@@ -125,7 +125,7 @@ user_data = <<-EOF
                       listen 80;
 
                       location / {
-                          proxy_pass http://${aws_instance.wordpress.ip}:8080;
+                          proxy_pass http://${aws_instance.wordpress.public_ip}:8080;
                           proxy_set_header Host \$host;
                           proxy_set_header X-Real-IP \$remote_addr;
                           proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -135,7 +135,7 @@ user_data = <<-EOF
                       location /wp-admin {
                           allow 58.84.60.89;  # Replace with your specific IP address
                           deny all;
-                          proxy_pass http://${aws_instance.wordpress.ip}:808};
+                          proxy_pass http://${aws_instance.wordpress.public_ip}:808};
                           proxy_set_header Host \$host;
                           proxy_set_header X-Real-IP \$remote_addr;
                           proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -145,7 +145,7 @@ user_data = <<-EOF
                       location /wp-login.php {
                           allow 58.84.60.89;  # Replace with your specific IP address
                           deny all;
-                          proxy_pass http://${aws_instance.wordpress.ip}:8080;
+                          proxy_pass http://${aws_instance.wordpress.public_ip}:8080;
                           proxy_set_header Host \$host;
                           proxy_set_header X-Real-IP \$remote_addr;
                           proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
