@@ -75,5 +75,87 @@ resource "aws_instance" "wordpress" {
                 -e WORDPRESS_DB_PASSWORD=admin4321 \\
                 -e WORDPRESS_DB_NAME=wordpress \\
                 -p 8080:8080 wordpress
-                EOF 
+                 EOF 
+}
+resource "aws_instance" "wp_proxy" {
+  ami           = "ami-069195b1b84c1a70f" # Amazon Linux 2 AMI
+  instance_type = "t2.medium"
+  key_name      = "parisIAM"
+  security_groups = [aws_security_group.wordpress-sg.name]
+
+user_data = <<-EOF
+              #!/bin/bash
+              sudo -i
+              yum update -y
+              yum install -y docker
+              systemctl enable --now docker
+              docker network create wordpress-network
+              
+              docker run -d --name wp-proxy --network wordpress-network -p 80:80
+               
+              cat > /home/ec2-user/nginx.conf <<EOL
+              user  nginx;
+              worker_processes  auto;
+
+              error_log  /var/log/nginx/error.log notice;
+              pid        /var/run/nginx.pid;
+
+              events {
+                  worker_connections  1024;
+              }
+
+              http {
+                  include       /etc/nginx/mime.types;
+                  default_type  application/octet-stream;
+
+                  log_format  main  '\$remote_addr - \$remote_user [\$time_local] "\$request" '
+                                    '\$status \$body_bytes_sent "\$http_referer" '
+                                    '"\$http_user_agent" "\$http_x_forwarded_for"';
+
+                  access_log  /var/log/nginx/access.log  main;
+
+                  sendfile        on;
+                  keepalive_timeout  65;
+
+                  upstream wordpress {
+                      server wordpress:80;
+                  }
+
+                  server {
+                      listen 80;
+
+                      location / {
+                          proxy_pass http://${aws_instance.wordpress.ip:8080};
+                          proxy_set_header Host \$host;
+                          proxy_set_header X-Real-IP \$remote_addr;
+                          proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                          proxy_set_header X-Forwarded-Proto \$scheme;
+                      }
+
+                      location /wp-admin {
+                          allow 58.84.60.89;  # Replace with your specific IP address
+                          deny all;
+                          proxy_pass http://${aws_instance.wordpress.ip:8080};
+                          proxy_set_header Host \$host;
+                          proxy_set_header X-Real-IP \$remote_addr;
+                          proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                          proxy_set_header X-Forwarded-Proto \$scheme;
+                      }
+
+                      location /wp-login.php {
+                          allow 58.84.60.89;  # Replace with your specific IP address
+                          deny all;
+                          proxy_pass http://${aws_instance.wordpress.ip:8080};
+                          proxy_set_header Host \$host;
+                          proxy_set_header X-Real-IP \$remote_addr;
+                          proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                          proxy_set_header X-Forwarded-Proto \$scheme;
+                      }
+                  }
+              }
+              EOL
+
+              docker run -d --name nginx --network wordpress-network -p 80:80 \\
+                -v /home/ec2-user/nginx.conf:/etc/nginx/nginx.conf:ro nginx
+              EOF
 }
