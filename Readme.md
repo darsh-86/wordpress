@@ -21,25 +21,27 @@ This project automates the deployment of a WordPress website on AWS, protected b
 
 ```sh
 # 1. Clone the Repository
-git clone https://github.com/your-repo/wordpress-nginx-aws.git
-cd wordpress-nginx-aws
+git clone https://github.com/darsh-86/wordpress.git
 ```
 
 # 2. Terraform Configuration
-# Ensure you have Terraform installed and AWS CLI configured with the necessary permissions.
+- Ensure you have Terraform installed and AWS CLI configured with the necessary permissions.
 
 # Modify Variables
-# Edit the main.tf file to update the following placeholders with your specific values:
+Edit the main.tf file to update the following placeholders with your specific values:
 - your-key-pair: Your AWS EC2 key pair name
 - your-admin-ip: Your IP address for restricted admin access
 - yourpassword: Your desired RDS database password
 
 # Initialize and Apply Terraform
+```sh
 terraform init
+```
+```sh
 terraform apply
-
+```
 # 3. Docker Configuration
- Build and run the Docker containers for WordPress and Nginx.
+- Build and run the Docker containers for WordPress and Nginx.
 
 # 4. Nginx Configuration
 Create the necessary Nginx configuration files:
