@@ -66,19 +66,13 @@ resource "aws_instance" "wordpress" {
 
   user_data = <<-EOF
               #!/bin/bash
-              sudo -i
-              yum update -y
-              yum install -y docker
-              systemctl enable --now docker
-              docker network create wordpress-network
+              sudo yum update -y
+              sudo yum install -y docker
+              sudo systemctl enable --now docker
+              sudo docker network create wordpress-network
 
-              docker run -d --name wordpress --network wordpress-network \\
-                -e WORDPRESS_DB_HOST=${aws_db_instance.wordpress_db.endpoint}:3306 \\
-                -e WORDPRESS_DB_USER=admin \\
-                -e WORDPRESS_DB_PASSWORD=admin4321 \\
-                -e WORDPRESS_DB_NAME=wordpress \\
-                -p 8080:80 wordpress
-                 EOF 
+              sudo docker run -d --name wordpress --network wordpress-network -e WORDPRESS_DB_HOST=${aws_db_instance.wordpress_db.endpoint}:3306 -e WORDPRESS_DB_USER=admin -e WORDPRESS_DB_PASSWORD=admin4321 -e WORDPRESS_DB_NAME=wordpress -p 8080:80 wordpress
+              EOF 
 }
 resource "aws_instance" "wp_proxy" {
   ami           = "ami-0e69eec55f2854bee" # Amazon Linux 2 AMI
@@ -161,7 +155,6 @@ user_data = <<-EOF
               }
               EOL
 
-              docker run -d --name nginx --network wordpress-network -p 80:80 \\
-                -v /home/ec2-user/nginx.conf:/etc/nginx/nginx.conf:ro nginx
+              docker run -d --name nginx --network wordpress-network -p 80:80 -v /home/ec2-user/nginx.conf:/etc/nginx/nginx.conf:ro nginx
               EOF
 }
