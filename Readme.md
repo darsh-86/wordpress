@@ -61,4 +61,6 @@ Create an analyze_logs.py script to analyze Nginx logs and generate a report.
 
 # Cleanup
 To destroy the infrastructure created by Terraform, run:
+```sh
 terraform destroy
+```
