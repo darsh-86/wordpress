@@ -58,7 +58,9 @@ resource "aws_instance" "wordpress" {
   ami           = "ami-0e69eec55f2854bee" # Amazon Linux 2 AMI
   instance_type = "t2.medium"
   key_name      = "parisIAM"
-  tag           = "wordpress"
+  tags  = {
+             name = "wordpress"
+   }
 
   security_groups = [aws_security_group.wordpress_sg.name]
 
@@ -82,7 +84,9 @@ resource "aws_instance" "wp_proxy" {
   ami           = "ami-0e69eec55f2854bee" # Amazon Linux 2 AMI
   instance_type = "t2.medium"
   key_name      = "parisIAM"
-  tag           = "wp_proxy"
+  tags   = {
+    name = "wp_proxy"
+  }
   security_groups = [aws_security_group.wordpress_sg.name]
 
 user_data = <<-EOF
