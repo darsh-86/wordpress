@@ -47,7 +47,7 @@ resource "aws_db_instance" "wordpress_db" {
   engine               = "mysql"
   engine_version       = "8.0"
   instance_class       = "db.t3.micro"
-  db_name                 = "wordpressdb"
+  db_name              = "wordpressdb"
   username             = "admin"
   password             = "admin4321"
   parameter_group_name = "default.mysql8.0"
@@ -55,9 +55,10 @@ resource "aws_db_instance" "wordpress_db" {
 }
 
 resource "aws_instance" "wordpress" {
-  ami           = "ami-069195b1b84c1a70f" # Amazon Linux 2 AMI
+  ami           = "ami-0e69eec55f2854bee" # Amazon Linux 2 AMI
   instance_type = "t2.medium"
   key_name      = "parisIAM"
+  tag           = "wordpress"
 
   security_groups = [aws_security_group.wordpress-sg.name]
 
@@ -78,9 +79,10 @@ resource "aws_instance" "wordpress" {
                  EOF 
 }
 resource "aws_instance" "wp_proxy" {
-  ami           = "ami-069195b1b84c1a70f" # Amazon Linux 2 AMI
+  ami           = "ami-0e69eec55f2854bee" # Amazon Linux 2 AMI
   instance_type = "t2.medium"
   key_name      = "parisIAM"
+  tag           = "wp_proxy"
   security_groups = [aws_security_group.wordpress-sg.name]
 
 user_data = <<-EOF
