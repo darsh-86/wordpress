@@ -57,7 +57,7 @@ resource "aws_db_instance" "wordpress_db" {
 resource "aws_instance" "wordpress" {
   ami           = "ami-0e69eec55f2854bee" # Amazon Linux 2 AMI
   instance_type = "t2.medium"
-  key_name      = "parisIAM"
+  key_name      = "paris"
   tags  = {
              name = "wordpress"
    }
@@ -77,7 +77,7 @@ resource "aws_instance" "wordpress" {
 resource "aws_instance" "wp_proxy" {
   ami           = "ami-0e69eec55f2854bee" # Amazon Linux 2 AMI
   instance_type = "t2.medium"
-  key_name      = "parisIAM"
+  key_name      = "paris"
   tags   = {
     name = "wp_proxy"
   }
