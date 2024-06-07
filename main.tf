@@ -90,9 +90,7 @@ user_data = <<-EOF
               yum install -y docker
               systemctl enable --now docker
               docker network create wordpress-network
-              
-              docker run -d --name wp-proxy --network wordpress-network -p 80:80
-               
+                    
               cat > /home/ec2-user/nginx.conf <<EOL
               user  nginx;
               worker_processes  auto;
