@@ -71,7 +71,7 @@ resource "aws_instance" "wordpress" {
               sudo systemctl enable --now docker
               sudo docker network create wordpress-network
 
-              sudo docker run -d --name wordpress --network wordpress-network -e WORDPRESS_DB_HOST=${aws_db_instance.wordpress_db.endpoint}:3306 -e WORDPRESS_DB_USER=admin -e WORDPRESS_DB_PASSWORD=admin4321 -e WORDPRESS_DB_NAME=wordpress -p 8080:80 wordpress
+              sudo docker run -d --name wordpress --network wordpress-network -e WORDPRESS_DB_HOST=${aws_db_instance.wordpress_db.endpoint}:3306 -e WORDPRESS_DB_USER=admin -e WORDPRESS_DB_PASSWORD=admin4321 -e WORDPRESS_DB_NAME=wordpressdb -p 8080:80 wordpress
               EOF 
 }
 resource "aws_instance" "wp_proxy" {
