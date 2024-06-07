@@ -92,59 +92,59 @@ user_data = <<-EOF
                     
               cat > /home/ec2-user/nginx.conf <<EOL
               user nginx;
-worker_processes auto;
+              worker_processes auto;
 
-error_log /var/log/nginx/error.log notice;
-pid /var/run/nginx.pid;
+              error_log /var/log/nginx/error.log notice;
+              pid /var/run/nginx.pid;
 
-events {
-    worker_connections 1024;
-}
+              events {
+              worker_connections 1024;
+              }
 
-http {
-    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';
-    access_log /var/log/nginx/access.log main;
+              http {
+                  log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                              '$status $body_bytes_sent "$http_referer" '
+                              '"$http_user_agent" "$http_x_forwarded_for"';
+                  access_log /var/log/nginx/access.log main;
 
-    sendfile on;
-    keepalive_timeout 65;
+                  sendfile on;
+                  keepalive_timeout 65;
+ 
+                  server {
+                    listen 80;
 
-    server {
-        listen 80;
+                    location / {
+                       proxy_pass http://${aws_instance.wordpress.public_ip}:8080;
+                       proxy_set_header Host $host;
+                       proxy_set_header X-Real-IP $remote_addr;
+                       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                      proxy_set_header X-Forwarded-Proto $scheme;
+                    }
 
-        location / {
-            proxy_pass http://${aws_instance.wordpress.public_ip}:8080;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
+                    location /wp-admin {
+                        allow 192.168.1.6;  # Replace with your specific IP address
+                        deny all;
+                        proxy_pass http://${aws_instance.wordpress.public_ip}:8080;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                    }
 
-        location /wp-admin {
-            allow 192.168.1.6;  # Replace with your specific IP address
-            deny all;
-            proxy_pass http://${aws_instance.wordpress.public_ip}:8080;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
+                   location /wp-login.php {
+                        allow 192.168.1.6;  # Replace with your specific IP address
+                        deny all;
+                        proxy_pass http://${aws_instance.wordpress.public_ip}:8080;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                  }
+               }
+             }
 
-        location /wp-login.php {
-            allow 192.168.1.6;  # Replace with your specific IP address
-            deny all;
-            proxy_pass http://${aws_instance.wordpress.public_ip}:8080;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-    }
-}
+             EOL
 
-              EOL
-
-              docker run -d --name wp-proxy --network wordpress-network -p 80:80 -v /home/ec2-user/nginx.conf:/etc/nginx/nginx.conf:ro nginx
-              EOF
+            docker run -d --name wp-proxy --network wordpress-network -p 80:80 -v /home/ec2-user/nginx.conf:/etc/nginx/nginx.conf:ro nginx
+            EOF
 }
