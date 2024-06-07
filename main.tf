@@ -83,7 +83,7 @@ resource "aws_instance" "wp_proxy" {
   }
   security_groups = [aws_security_group.wordpress_sg.name]
 
-user_data = <<-EOF
+  user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
               sudo yum install -y docker
@@ -98,7 +98,7 @@ user_data = <<-EOF
               pid /var/run/nginx.pid;
 
               events {
-              worker_connections 1024;
+                  worker_connections 1024;
               }
 
               http {
@@ -115,30 +115,30 @@ user_data = <<-EOF
 
                     location / {
                        proxy_pass http://${aws_instance.wordpress.public_ip}:8080;
-                       proxy_set_header Host $host;
-                       proxy_set_header X-Real-IP $remote_addr;
-                       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                      proxy_set_header X-Forwarded-Proto $scheme;
+                       proxy_set_header Host $$host;
+                       proxy_set_header X-Real-IP $$remote_addr;
+                       proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+                       proxy_set_header X-Forwarded-Proto $$scheme;
                     }
 
                     location /wp-admin {
                         allow 192.168.1.6;  # Replace with your specific IP address
                         deny all;
                         proxy_pass http://${aws_instance.wordpress.public_ip}:8080;
-                        proxy_set_header Host $host;
-                        proxy_set_header X-Real-IP $remote_addr;
-                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_set_header Host $$host;
+                        proxy_set_header X-Real-IP $$remote_addr;
+                        proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $$scheme;
                     }
 
                    location /wp-login.php {
                         allow 192.168.1.6;  # Replace with your specific IP address
                         deny all;
                         proxy_pass http://${aws_instance.wordpress.public_ip}:8080;
-                        proxy_set_header Host $host;
-                        proxy_set_header X-Real-IP $remote_addr;
-                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_set_header Host $$host;
+                        proxy_set_header X-Real-IP $$remote_addr;
+                        proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $$scheme;
                   }
                }
              }
