@@ -115,11 +115,7 @@ user_data = <<-EOF
                   sendfile        on;
                   keepalive_timeout  65;
 
-                  upstream wordpress {
-                      server wordpress:80;
-                  }
-
-                  server {
+                      server {
                       listen 80;
 
                       location / {
@@ -131,9 +127,9 @@ user_data = <<-EOF
                       }
 
                       location /wp-admin {
-                          allow 58.84.60.89;  # Replace with your specific IP address
+                          allow 192.168.1.6;  # Replace with your specific IP address
                           deny all;
-                          proxy_pass http://${aws_instance.wordpress.public_ip}:808};
+                          proxy_pass http://${aws_instance.wordpress.public_ip}:8080};
                           proxy_set_header Host \$host;
                           proxy_set_header X-Real-IP \$remote_addr;
                           proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -141,7 +137,7 @@ user_data = <<-EOF
                       }
 
                       location /wp-login.php {
-                          allow 58.84.60.89;  # Replace with your specific IP address
+                          allow 192.168.6;  # Replace with your specific IP address
                           deny all;
                           proxy_pass http://${aws_instance.wordpress.public_ip}:8080;
                           proxy_set_header Host \$host;
@@ -153,6 +149,6 @@ user_data = <<-EOF
               }
               EOL
 
-              docker run -d --name nginx --network wordpress-network -p 80:80 -v /home/ec2-user/nginx.conf:/etc/nginx/nginx.conf:ro nginx
+              docker run -d --name wp-proxy --network wordpress-network -p 80:80 -v /home/ec2-user/nginx.conf:/etc/nginx/nginx.conf:ro nginx
               EOF
 }
